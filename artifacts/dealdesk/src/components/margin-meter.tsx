@@ -61,13 +61,25 @@ export function MarginMeter({ listTotal, floorTotal, effective, original, approv
           <div className={`tnum font-semibold ${floorD - effective < 0 ? 'text-bad' : 'text-ink'}`}>{pct(floorD - effective)}</div>
         </div>
       </div>
-      <div className="mt-6 mb-2">{bar('h-3')}</div>
-      <div className="relative h-9 text-[11px] text-sub tnum">
-        <span className="absolute left-0">List 0%</span>
-        {rep > 0 && <span className="absolute -translate-x-1/2 text-ok" style={{ left: pos(rep) }}>Rep {pct(rep)}</span>}
-        {sh > rep && <span className="absolute -translate-x-1/2 top-4 text-warn" style={{ left: `calc(${pos(sh)} - 0px)`, display: Math.abs(sh - floorD) < maxScale * 0.12 ? 'none' : undefined }}>Sales Head {pct(sh)}</span>}
-        <span className="absolute -translate-x-1/2 top-4 text-bad font-medium" style={{ left: pos(floorD) }}>Floor {pct(floorD)}</span>
-        <span className="absolute right-0">{pct(maxScale, 0)}</span>
+      <div className="mt-6">
+        <div className="relative h-4 mb-1 text-[11px] text-bad font-medium tnum">
+          <span className="absolute -translate-x-1/2 whitespace-nowrap" style={{ left: `clamp(52px, ${pos(floorD)}, calc(100% - 52px))` }}>Floor {pct(floorD)}</span>
+        </div>
+        {bar('h-3')}
+        <div className="flex justify-between gap-2 h-4 text-[11px] text-sub tnum">
+          <span>List 0%</span>
+          <span>{pct(maxScale, 0)}</span>
+        </div>
+        {rep > 0 && (
+          <div className="relative h-4 text-[11px] text-ok tnum">
+            <span className="absolute -translate-x-1/2 whitespace-nowrap" style={{ left: `clamp(52px, ${pos(rep)}, calc(100% - 52px))` }}>Rep {pct(rep)}</span>
+          </div>
+        )}
+        {sh > rep && (
+          <div className="relative h-4 text-[11px] text-warn tnum">
+            <span className="absolute -translate-x-1/2 whitespace-nowrap" style={{ left: `clamp(52px, ${pos(sh)}, calc(100% - 52px))` }}>Sales Head {pct(sh)}</span>
+          </div>
+        )}
       </div>
       <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-sub mb-3"><span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-[#D7EDE6]" />Rep approves</span><span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-[#F4E4C6]" />Sales Head</span><span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-[#F1D3D0]" />Founder / below floor</span></div>
       <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm border-t border-line pt-3">
