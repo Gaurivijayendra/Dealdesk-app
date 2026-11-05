@@ -5,9 +5,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { errMsg } from '@/lib/dd';
 
 const PROMPTS = [
-  'Draft a DealDesk quote for Acme Logistics: 40 Growth seats, annual prepaid. They want 25% off because a competitor quoted ₹450 per seat. Include the reason, and if it lands above policy, add a counter offer we can live with.',
+  'Draft a DealDesk quote for Sahyadri Freight: 40 Growth seats, annual prepaid. They want 25% off because a competitor quoted ₹450 per seat. Include the reason, and if it lands above policy, add a counter offer we can live with.',
   'List my DealDesk quotes waiting on Sales Head approval and tell me which ones are below floor.',
-  'Show me the full details and approval history of the latest DealDesk quote for Acme Logistics, including any edits people made after Claude created it.',
+  'Show me the full details and approval history of the latest DealDesk quote for Sahyadri Freight, including any edits people made after Claude created it.',
   'Which DealDesk quotes are waiting for my approval? Summarise each in one line.',
 ];
 

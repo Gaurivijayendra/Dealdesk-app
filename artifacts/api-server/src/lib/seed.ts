@@ -8,7 +8,7 @@ export async function seedDemo() {
     if (exists.rows.length) return;
     const policy = await getPolicy(c);
     const examples = [
-      { company: "Acme Logistics", contact: "Priya Sharma", discount: 25, qty: 40, status: "pending_approval", reason: "Competitor offered ₹450 per seat. Client will commit to annual prepaid for 40 seats if we match.", counter: "Offer 18% with annual prepaid and a 12-month commitment; preserve the ₹450 floor.", annual: true },
+      { company: "Sahyadri Freight", contact: "Priya Sharma", discount: 25, qty: 40, status: "pending_approval", reason: "Competitor offered ₹450 per seat. Client will commit to annual prepaid for 40 seats if we match.", counter: "Offer 18% with annual prepaid and a 12-month commitment; preserve the ₹450 floor.", annual: true },
       { company: "Meridian Finserv", contact: "Vikram Rao", discount: 15, qty: 75, status: "pending_approval", reason: "Consolidating three reporting tools. Procurement requests a 15% volume discount for a 75-seat rollout.", counter: "Keep 15% conditional on 75 committed seats.", annual: false },
       { company: "Kaveri Retail", contact: "Ananya Shah", discount: 8, qty: 30, status: "approved", reason: "Pilot conversion to a 30-seat team. Standard launch incentive within rep policy.", counter: "8% for monthly billing; expand to 50 seats at renewal.", annual: false },
       { company: "Orbit Healthtech", contact: "Siddharth Jain", discount: 18, qty: 55, status: "sent", reason: "Annual commitment after a successful pilot. Original request was 25%; negotiated to 18%.", counter: "18% annual prepaid instead of 25%, with onboarding at list price.", annual: true },

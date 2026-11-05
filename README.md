@@ -18,7 +18,7 @@ The MCP endpoint is a public demo endpoint without OAuth. Anyone who has its URL
 4. Choose **No sign in**, then click **Add**.
 5. In a chat, click **+ → Connectors** and switch on **DealDesk**.
 6. Try a prompt such as:
-   - “Draft a DealDesk quote for Acme Logistics: 40 Growth plan seats, annual prepaid. They want 25% off because a competitor quoted ₹450 per seat. Include a discount reason and suggest a counter-offer within policy.”
+   - “Draft a DealDesk quote for Sahyadri Freight: 40 Growth plan seats, annual prepaid. They want 25% off because a competitor quoted ₹450 per seat. Include a discount reason and suggest a counter-offer within policy.”
    - “Which DealDesk quotes are waiting for my approval? Summarise each in one line.”
 
 ## How it works
