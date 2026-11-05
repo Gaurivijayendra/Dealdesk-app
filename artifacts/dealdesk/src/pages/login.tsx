@@ -30,7 +30,7 @@ export default function LoginPage() {
         <section className="hidden lg:flex flex-col justify-between p-14 border-r border-line bg-white">
           <Logo className="text-xl" />
           <div className="max-w-lg">
-            <h1 className="text-5xl font-semibold leading-[1.05] text-ink">AI writes the deal.<br /><span className="text-ok">Rules and people protect the margin.</span></h1>
+            <h1 className="text-5xl font-semibold leading-[1.05] text-ink">Every deal, clearly documented.<br /><span className="text-ok">Rules and people protect the margin.</span></h1>
             <p className="mt-6 text-sub text-lg">Your reps draft quotes with Claude. DealDesk checks every rupee against your floors, routes the exceptions to the right approver, and keeps a clean record.</p>
             <div className="mt-12 paper rounded-md p-6">
               <div className="flex justify-between text-sm mb-4"><span className="font-display font-semibold">Q-1042 · Kaveri Logistics</span><span className="text-warn">Pending · Sales Head</span></div>

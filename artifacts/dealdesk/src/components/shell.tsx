@@ -25,7 +25,7 @@ export function Logo({ className = '' }: { className?: string }) {
 export function Footer() {
   return (
     <footer className="border-t border-line px-6 py-4 text-sm text-sub text-center" data-testid="text-footer">
-      No AI inside — Claude does the thinking, DealDesk does the rest.
+      Clear quotes. Confident approvals.
     </footer>
   );
 }

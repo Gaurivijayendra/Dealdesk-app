@@ -17,7 +17,7 @@ export default function ConnectPage() {
 
   return (
     <div className="px-4 md:px-10 py-8 md:py-12 max-w-4xl">
-      <PageHeader title="Connect to Claude" sub="AI writes the deal. Rules and people protect the margin. Your reps use their own Claude; DealDesk exposes a connector so every draft goes through your rules." />
+      <PageHeader title="Connect to Claude" sub="Keep every quote clear, consistent, and aligned with your approval rules. Connect Claude to draft deals directly in DealDesk." />
       {info.isLoading ? <Skeleton className="h-40" /> : info.isError || !info.data ? (
         <div><p className="text-bad">{errMsg(info.error)}</p><button onClick={() => info.refetch()} className="mt-2 text-ok underline" data-testid="button-retry">Retry</button></div>
       ) : (
@@ -69,7 +69,7 @@ export default function ConnectPage() {
             <ul className="flex flex-wrap gap-2" data-testid="list-tools">
               {info.data.tools.map((t) => <li key={t} className="font-mono text-sm border border-line bg-white rounded px-2 py-1">{t}</li>)}
             </ul>
-            <p className="text-sm text-sub mt-4">DealDesk itself contains no AI. Quotes created through these tools are tagged Created via Claude and go through the same rules and approvals.</p>
+            <p className="text-sm text-sub mt-4">Quotes created through these tools are tagged Created via Claude and follow the same rules and approval process as every other quote.</p>
           </section>
         </>
       )}
