@@ -12,6 +12,7 @@ import { MarginMeter } from '@/components/margin-meter';
 import { StatusBadge, SourceTag, SimTag } from '@/components/badges';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toInput, errMsg, fmtDate, isSeed } from '@/lib/dd';
+import { canCurrentRoleDecide, decisionPermissionText } from '@/lib/role-access';
 
 type StepState = 'done' | 'current' | 'skipped' | 'todo' | 'stopped';
 
@@ -82,7 +83,7 @@ export default function QuoteDetailPage() {
 
   const role = session.data?.role;
   const locked = q.status === 'accepted';
-  const canDecide = q.status === 'pending_approval' && role === q.requiredApprover;
+  const canDecide = q.status === 'pending_approval' && canCurrentRoleDecide(role, q.requiredApprover);
   const canSubmit = q.status === 'draft' || q.status === 'changes_requested';
   const canSend = q.status === 'approved';
   const shareUrl = `${window.location.origin}/client/${q.publicToken}`;
@@ -175,7 +176,7 @@ export default function QuoteDetailPage() {
                     </div>
                   </div>
                 )}
-                {q.status === 'pending_approval' && !canDecide && <p className="text-sm text-sub">Only the {q.requiredApprover} can decide. Switch the simulated role to act.</p>}
+                {q.status === 'pending_approval' && !canDecide && <p className="text-sm text-sub">{decisionPermissionText(q.requiredApprover)} Switch the simulated role to act.</p>}
                 {canSend && <button onClick={() => act('send')} disabled={action.isPending || dirty} className="w-full rounded-md bg-ok text-white py-2 text-sm font-semibold disabled:opacity-50" data-testid="button-send">Send to client</button>}
                 {action.isError && <p role="alert" className="text-sm text-bad" data-testid="text-action-error">{errMsg(action.error)}</p>}
               </div>

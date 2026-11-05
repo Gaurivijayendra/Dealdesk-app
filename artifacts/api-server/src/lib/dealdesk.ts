@@ -6,6 +6,7 @@ import { z } from "zod";
 export type Policy = z.infer<typeof UpdatePolicyBody>;
 export type QuoteInput = z.infer<typeof CreateQuoteBody>;
 export type Role = "Rep" | "Sales Head" | "Founder";
+const roleSeniority: Record<Role, number> = { Rep: 0, "Sales Head": 1, Founder: 2 };
 export type Event = { at: string; actor: string; message: string };
 export type Quote = Omit<QuoteInput, "validityDate"> & {
   validityDate: string; id: string; number: string; status: string; source: "claude" | "manual";
@@ -161,13 +162,19 @@ export async function actionQuote(id: string, action: string, role: Role, commen
       q.status = "sent";
     } else {
       if (q.status !== "pending_approval") throw new AppError(409, "This quote is not waiting for approval.");
-      if (role !== q.requiredApprover) throw new AppError(403, `Only ${q.requiredApprover} can decide this quote.`);
+      if (roleSeniority[role] < roleSeniority[q.requiredApprover]) {
+        const eligible = q.requiredApprover === "Founder" ? "Only the Founder can decide this quote." : "Only the Sales Head or Founder can decide this quote.";
+        throw new AppError(403, eligible);
+      }
       if (!["approve", "reject", "request_changes"].includes(action)) throw new AppError(400, "Unknown action.");
       q.status = action === "approve" ? "approved" : action === "reject" ? "rejected" : "changes_requested";
       if (action === "approve") { q.approvedAt = iso(); q.approvedDiscountPercent = q.effectiveDiscountPercent; }
     }
     const labels: Record<string, string> = { submit: "Quote submitted for policy review", send: "Quote sent: client acceptance link created (copy and share manually; no email sent)", approve: "Quote approved", reject: "Quote rejected", request_changes: "Changes requested" };
-    event(q, names[role], `${labels[action]}.${comment ? ` ${comment}` : ""}`);
+    const message = ["approve", "reject", "request_changes"].includes(action)
+      ? `${action === "approve" ? "Approved" : action === "reject" ? "Rejected" : "Changes requested"} by ${names[role]} (${role})${role === q.requiredApprover ? "" : ` — ${q.requiredApprover} band`}.${comment ? ` ${comment}` : ""}`
+      : `${labels[action]}.${comment ? ` ${comment}` : ""}`;
+    event(q, names[role], message);
     return persist(c, q);
   });
 }

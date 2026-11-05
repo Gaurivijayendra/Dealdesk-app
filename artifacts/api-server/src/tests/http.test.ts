@@ -8,7 +8,7 @@ vi.mock("@workspace/db", async () => {
 });
 vi.hoisted(() => { process.env.LOG_LEVEL = "silent"; });
 
-import { initialPolicy, type Quote, type Role } from "../lib/dealdesk";
+import { initialPolicy, names, type Quote, type Role } from "../lib/dealdesk";
 import { cleanupDatabase, resetDatabase, setupDatabase, testPool } from "./database";
 import { action, create, login, read, request, sentQuote, startServer, stopServer, switchRole } from "./http-client";
 import { quoteInput } from "./fixtures";
@@ -90,10 +90,10 @@ describe("HTTP login and origin authorization", () => {
   });
 });
 
-describe("exact-role decisions, not role hierarchy or request claims", () => {
+describe("seniority-based decisions, not request claims", () => {
   for (const [discountPercent, requiredRole] of [[15, "Sales Head"], [21, "Founder"]] as const) {
     for (const decision of decisions) {
-      it.each(roles)(`only ${requiredRole} can ${decision} a ${discountPercent}% quote (session %s)`, async role => {
+      it.each(roles)(`${decision} on a ${discountPercent}% quote is available to ${requiredRole} or more senior (session %s)`, async role => {
         const cookie = await login(role);
         const q = await create(cookie, { discountPercent });
         expect(q.requiredApprover).toBe(requiredRole);
@@ -102,7 +102,8 @@ describe("exact-role decisions, not role hierarchy or request claims", () => {
           // These claims must never override the cookie-backed session role.
           role: requiredRole, approvedBy: requiredRole,
         }, cookie, { "X-Role": requiredRole });
-        if (role !== requiredRole) {
+        const mayDecide = roles.indexOf(role) >= roles.indexOf(requiredRole);
+        if (!mayDecide) {
           expect(response.status).toBe(403);
           expect(await read(cookie, q.id)).toEqual(q);
         } else {
@@ -112,6 +113,10 @@ describe("exact-role decisions, not role hierarchy or request claims", () => {
           }[decision]);
           expect(response.data.version).toBe(q.version + 1);
           expect(response.data.history).toHaveLength(q.history.length + 1);
+          const decisionEvent = response.data.history.at(-1)!;
+          expect(decisionEvent.actor).toBe(names[role]);
+          expect(decisionEvent.message).toContain(`by ${names[role]} (${role})`);
+          if (role !== requiredRole) expect(decisionEvent.message).toContain(`— ${requiredRole} band`);
           if (decision === "approve") {
             expect(response.data.approvedDiscountPercent).toBe(discountPercent);
             expect(response.data.approvedAt).not.toBeNull();
@@ -122,6 +127,23 @@ describe("exact-role decisions, not role hierarchy or request claims", () => {
       });
     }
   }
+
+  it("lets the Founder approve after editing a Founder-band quote into the Sales Head band", async () => {
+    const cookie = await login("Founder");
+    const q = await create(cookie, { discountPercent: 25 });
+    expect(q.status).toBe("pending_approval");
+    expect(q.requiredApprover).toBe("Founder");
+
+    const edited = await request("PUT", `/quotes/${q.id}`, { ...q, discountPercent: 18 }, cookie);
+    expect(edited.status).toBe(200);
+    expect(edited.data.status).toBe("pending_approval");
+    expect(edited.data.requiredApprover).toBe("Sales Head");
+
+    const approved = await action(cookie, edited.data, "approve");
+    expect(approved.status).toBe(200);
+    expect(approved.data.status).toBe("approved");
+    expect(approved.data.history.at(-1)?.message).toContain("Approved by Rohan Kapoor (Founder) — Sales Head band");
+  });
 
   it("requires Founder for a single floor breach even when the aggregate is profitable", async () => {
     const cookie = await login("Sales Head");
@@ -148,6 +170,28 @@ describe("exact-role decisions, not role hierarchy or request claims", () => {
     expect((await action(cookie, rejected.data, "send")).status).toBe(409);
     expect((await action(cookie, rejected.data, "approve")).status).toBe(409);
     expect(await read(cookie, q.id)).toEqual(rejected.data);
+  });
+});
+
+describe("Founder-only policy updates", () => {
+  it.each(["Rep", "Sales Head"] as const)("rejects policy changes from %s", async role => {
+    const cookie = await login(role);
+    const changed = structuredClone(initialPolicy);
+    changed.bands[0]!.maxDiscount = 5;
+
+    const response = await request<{ error: string }>("PUT", "/policy", changed, cookie);
+    expect(response.status).toBe(403);
+    expect(response.data.error).toBe("Only the Founder can change discount rules.");
+    expect((await request("GET", "/policy", undefined, cookie)).data).toEqual(initialPolicy);
+  });
+
+  it("allows the Founder to update policy", async () => {
+    const cookie = await login("Founder");
+    const changed = structuredClone(initialPolicy);
+    changed.bands[0]!.maxDiscount = 5;
+    const response = await request("PUT", "/policy", changed, cookie);
+    expect(response.status).toBe(200);
+    expect(response.data).toEqual(changed);
   });
 });
 
@@ -250,7 +294,7 @@ describe("client links, immutable acceptance and simulated payments", () => {
   });
 
   it("resets unaccepted approvals and revokes sent links after a policy change", async () => {
-    const cookie = await login();
+    const cookie = await login("Founder");
     const sent = await sentQuote(cookie);
     const approved = await create(cookie, { discountPercent: 10 });
     const policy = structuredClone(initialPolicy);

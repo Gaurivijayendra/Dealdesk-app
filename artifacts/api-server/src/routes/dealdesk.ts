@@ -26,7 +26,10 @@ router.post("/public/quotes/:token/accept", sameOrigin, async (req, res) => {
 router.use(requireLogin);
 router.use((req, res, next) => { if (!["GET", "HEAD", "OPTIONS"].includes(req.method)) sameOrigin(req, res, next); else next(); });
 router.get("/policy", async (_req, res) => { res.json(await getPolicy()); });
-router.put("/policy", async (req, res) => { res.json(await savePolicy(UpdatePolicyBody.parse(req.body), req.demoSession!.name)); });
+router.put("/policy", async (req, res) => {
+  if (req.demoSession!.role !== "Founder") throw new AppError(403, "Only the Founder can change discount rules.");
+  res.json(await savePolicy(UpdatePolicyBody.parse(req.body), req.demoSession!.name));
+});
 router.get("/quotes", async (req, res) => {
   const { status, rep } = ListQuotesQueryParams.parse(req.query);
   res.json(await listQuotes(status, rep));
