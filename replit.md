@@ -17,6 +17,9 @@ DealDesk is a job-assignment prototype for small Indian B2B sales teams: persist
 - API managed workflow: `artifacts/api-server: API Server`.
 - Web managed workflow: `artifacts/dealdesk: web`.
 - `pnpm run typecheck` checks the workspace.
+- `pnpm test` runs the quote calculation and HTTP regression suite.
+- `pnpm --filter @workspace/api-server run test:unit` runs without PostgreSQL or credentials.
+- `pnpm --filter @workspace/api-server run test:integration` runs real HTTP/session/transaction tests using `DATABASE_URL` for a **development/test** PostgreSQL database. Each run creates a uniquely named private schema, resets only its own tables, and drops the schema on completion; it never migrates, seeds, or truncates application tables. The database role needs schema creation permission. Missing database configuration fails explicitly rather than skipping tests. Do not run against production.
 - `pnpm --filter @workspace/api-spec run codegen` regenerates the shared API contract.
 - `pnpm --filter @workspace/db run push` applies development schema changes.
 - Publish manages production schema changes. Do not add startup-time DDL.
