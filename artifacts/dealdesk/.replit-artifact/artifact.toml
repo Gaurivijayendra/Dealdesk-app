@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "DealDesk"
+description = "Discount governance and quote approval for small Indian B2B sales teams, with an external Claude MCP connector and simulated Volopay payment requests."
+version = "1.0.0"
+id = "artifacts/dealdesk"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22165
+
+[services.development]
+run = "pnpm --filter @workspace/dealdesk run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/dealdesk", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/dealdesk/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22165"
+BASE_PATH = "/"

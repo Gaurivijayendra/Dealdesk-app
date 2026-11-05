@@ -1,36 +1,360 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
-  version: 0.1.0
-  description: API specification
+  version: 1.0.0
+  description: DealDesk quote governance API. All amounts in INR.
 servers:
   - url: /api
-    description: Base API path
-tags:
-  - name: health
-    description: Health operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
-      tags: [health]
-      summary: Health check
-      description: Returns server health status
       responses:
-        "200":
+        '200':
           description: Healthy
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/HealthStatus"
+              schema: {$ref: '#/components/schemas/HealthStatus'}
+  /session:
+    get:
+      operationId: getSession
+      responses:
+        '200':
+          description: Demo session
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Session'}
+    post:
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LoginInput'}
+      responses:
+        '200':
+          description: Signed in
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Session'}
+    delete:
+      operationId: logout
+      responses:
+        '200':
+          description: Signed out
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Session'}
+  /session/role:
+    post:
+      operationId: switchRole
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RoleInput'}
+      responses:
+        '200':
+          description: Current role
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Session'}
+  /policy:
+    get:
+      operationId: getPolicy
+      responses:
+        '200':
+          description: Pricing and rules
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Policy'}
+    put:
+      operationId: updatePolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Policy'}
+      responses:
+        '200':
+          description: Saved
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Policy'}
+  /quotes:
+    get:
+      operationId: listQuotes
+      parameters:
+        - {name: status, in: query, schema: {type: string}}
+        - {name: rep, in: query, schema: {type: string}}
+      responses:
+        '200':
+          description: Quotes
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/Quote'}}
+    post:
+      operationId: createQuote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/QuoteInput'}
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Quote'}
+  /quotes/{id}:
+    parameters:
+      - {name: id, in: path, required: true, schema: {type: string}}
+    get:
+      operationId: getQuote
+      responses:
+        '200':
+          description: Quote
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Quote'}
+    put:
+      operationId: updateQuote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/QuoteInput'}
+      responses:
+        '200':
+          description: Saved and policy re-evaluated
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Quote'}
+  /quotes/{id}/actions:
+    parameters:
+      - {name: id, in: path, required: true, schema: {type: string}}
+    post:
+      operationId: quoteAction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ActionInput'}
+      responses:
+        '200':
+          description: Updated quote
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Quote'}
+  /dashboard:
+    get:
+      operationId: getDashboard
+      responses:
+        '200':
+          description: Current quarter metrics
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Dashboard'}
+  /connect:
+    get:
+      operationId: getConnectionInfo
+      responses:
+        '200':
+          description: MCP endpoint
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConnectionInfo'}
+  /public/quotes/{token}:
+    parameters:
+      - {name: token, in: path, required: true, schema: {type: string}}
+    get:
+      operationId: getPublicQuote
+      responses:
+        '200':
+          description: Client quote
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PublicQuote'}
+  /public/quotes/{token}/accept:
+    parameters:
+      - {name: token, in: path, required: true, schema: {type: string}}
+    post:
+      operationId: acceptPublicQuote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AcceptanceInput'}
+      responses:
+        '200':
+          description: Accepted with simulated payment
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PublicQuote'}
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
-        status:
-          type: string
-      required:
-        - status
-
+        status: {type: string}
+    Role:
+      type: string
+      enum: [Rep, Sales Head, Founder]
+    Session:
+      type: object
+      required: [authenticated, role, name]
+      properties:
+        authenticated: {type: boolean}
+        role: {$ref: '#/components/schemas/Role'}
+        name: {type: string}
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: {type: string}
+        password: {type: string}
+    RoleInput:
+      type: object
+      required: [role]
+      properties:
+        role: {$ref: '#/components/schemas/Role'}
+    Product:
+      type: object
+      required: [name, unit, listPrice, floorPrice]
+      properties:
+        name: {type: string}
+        unit: {type: string}
+        listPrice: {type: number}
+        floorPrice: {type: number}
+    Band:
+      type: object
+      required: [maxDiscount, approver]
+      properties:
+        maxDiscount: {type: number}
+        approver: {$ref: '#/components/schemas/Role'}
+    Policy:
+      type: object
+      required: [products, bands]
+      properties:
+        products: {type: array, items: {$ref: '#/components/schemas/Product'}}
+        bands: {type: array, items: {$ref: '#/components/schemas/Band'}}
+    LineItem:
+      type: object
+      required: [productName, quantity, unitPrice]
+      properties:
+        productName: {type: string, minLength: 1}
+        quantity: {type: integer, minimum: 1, maximum: 100000}
+        unitPrice: {type: number, minimum: 0, maximum: 100000000}
+    QuoteInput:
+      type: object
+      required: [clientCompany, contactName, contactEmail, repName, lineItems, discountPercent, discountReason, billingTerms, validityDate, notes]
+      properties:
+        clientCompany: {type: string, minLength: 1, maxLength: 200}
+        contactName: {type: string, minLength: 1, maxLength: 200}
+        contactEmail: {type: string, format: email}
+        repName: {type: string, minLength: 1, maxLength: 200}
+        lineItems: {type: array, minItems: 1, maxItems: 100, items: {$ref: '#/components/schemas/LineItem'}}
+        discountPercent: {type: number, minimum: 0, maximum: 100}
+        discountReason: {type: string, maxLength: 5000}
+        counterOffer: {type: string, maxLength: 5000}
+        billingTerms: {type: string, minLength: 1, maxLength: 500}
+        validityDate: {type: string, format: date}
+        notes: {type: string, maxLength: 5000}
+        saveAsDraft: {type: boolean}
+        version: {type: integer}
+    AuditEvent:
+      type: object
+      required: [at, actor, message]
+      properties:
+        at: {type: string}
+        actor: {type: string}
+        message: {type: string}
+    Quote:
+      allOf:
+        - {$ref: '#/components/schemas/QuoteInput'}
+        - type: object
+          required: [id, number, status, source, requiredApprover, subtotal, listTotal, discountAmount, total, floorTotal, effectiveDiscountPercent, originalDiscountPercent, belowFloor, ruleDescription, createdAt, updatedAt, history, publicToken, version]
+          properties:
+            id: {type: string}
+            number: {type: string}
+            status: {type: string, enum: [draft, pending_approval, approved, sent, accepted, changes_requested, rejected]}
+            source: {type: string, enum: [claude, manual]}
+            requiredApprover: {$ref: '#/components/schemas/Role'}
+            subtotal: {type: number}
+            listTotal: {type: number}
+            discountAmount: {type: number}
+            total: {type: number}
+            floorTotal: {type: number}
+            effectiveDiscountPercent: {type: number}
+            originalDiscountPercent: {type: number}
+            approvedDiscountPercent: {type: [number, 'null']}
+            approvedAt: {type: [string, 'null']}
+            belowFloor: {type: boolean}
+            ruleDescription: {type: string}
+            createdAt: {type: string}
+            updatedAt: {type: string}
+            history: {type: array, items: {$ref: '#/components/schemas/AuditEvent'}}
+            publicToken: {type: string}
+            version: {type: integer}
+            acceptedBy: {type: [string, 'null']}
+    ActionInput:
+      type: object
+      required: [action]
+      properties:
+        action: {type: string, enum: [submit, approve, request_changes, reject, send]}
+        comment: {type: string, maxLength: 5000}
+        version: {type: integer}
+    AcceptanceInput:
+      type: object
+      required: [name]
+      properties:
+        name: {type: string, minLength: 2, maxLength: 200}
+    Payment:
+      type: object
+      required: [reference, amount, accountName, accountNumber, ifsc, label]
+      properties:
+        reference: {type: string}
+        amount: {type: number}
+        accountName: {type: string}
+        accountNumber: {type: string}
+        ifsc: {type: string}
+        label: {type: string}
+    PublicQuote:
+      type: object
+      required: [quote]
+      properties:
+        quote: {$ref: '#/components/schemas/Quote'}
+        payment: {$ref: '#/components/schemas/Payment'}
+    RepMetric:
+      type: object
+      required: [rep, quoteCount, discountPercent, discountGiven, marginProtected]
+      properties:
+        rep: {type: string}
+        quoteCount: {type: integer}
+        discountPercent: {type: number}
+        discountGiven: {type: number}
+        marginProtected: {type: number}
+    Dashboard:
+      type: object
+      required: [quarter, discountGiven, averageDiscount, abovePolicyRequests, marginProtected, medianApprovalHours, totalQuotes, pendingCount, pipelineValue, byRep, recentActivity]
+      properties:
+        quarter: {type: string}
+        discountGiven: {type: number}
+        averageDiscount: {type: number}
+        abovePolicyRequests: {type: integer}
+        marginProtected: {type: number}
+        medianApprovalHours: {type: number}
+        totalQuotes: {type: integer}
+        pendingCount: {type: integer}
+        pipelineValue: {type: number}
+        byRep: {type: array, items: {$ref: '#/components/schemas/RepMetric'}}
+        recentActivity: {type: array, items: {$ref: '#/components/schemas/AuditEvent'}}
+    ConnectionInfo:
+      type: object
+      required: [mcpPath, tools, transport, warning]
+      properties:
+        mcpPath: {type: string}
+        tools: {type: array, items: {type: string}}
+        transport: {type: string}
+        warning: {type: string}
