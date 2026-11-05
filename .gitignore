@@ -2,9 +2,12 @@
 
 # compiled output
 dist
+build
 tmp
+out
 out-tsc
 *.tsbuildinfo
+.vite
 .expo
 .expo-shared
 .next
@@ -16,6 +19,26 @@ out-tsc
 
 # dependencies
 node_modules
+
+# local environment and credentials
+.env
+.env.*
+**/.env
+**/.env.*
+secrets/
+**/secrets/
+.secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.token
+*.secret
+*.secrets
+credentials.json
+*-credentials.json
 
 # IDEs and editors
 /.idea
