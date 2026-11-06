@@ -143,7 +143,7 @@ export function getApprovalPath(
     return { state: 'todo', note: 'Needed once submitted' };
   };
 
-  let approverLabel = q.requiredApprover;
+  let approverLabel: string = q.requiredApprover;
   if (decision) approverLabel = `${decision.name} (${decision.role})`;
 
   return {

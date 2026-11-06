@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getApprovalPath, type ApprovalHistoryQuote } from "../../../dealdesk/src/lib/approval-history";
+import { getApprovalPath } from "../../../dealdesk/src/lib/approval-history.ts";
 
 const approvedAt = "2026-11-06T14:30:00.000Z";
 
-function quote(overrides: Partial<ApprovalHistoryQuote> = {}): ApprovalHistoryQuote {
+function quote(overrides = {}) {
   return {
     status: "approved",
     requiredApprover: "Sales Head",
