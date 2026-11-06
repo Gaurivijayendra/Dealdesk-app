@@ -13,26 +13,17 @@ import { StatusBadge, SourceTag, SimTag } from '@/components/badges';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toInput, errMsg, fmtDate, isSeed } from '@/lib/dd';
 import { canCurrentRoleDecide, decisionPermissionText } from '@/lib/role-access';
+import { getApprovalPath } from '@/lib/approval-history';
 
 type StepState = 'done' | 'current' | 'skipped' | 'todo' | 'stopped';
 
-function steps(q: Quote): { label: string; state: StepState; note: string }[] {
+function steps(q: Quote): { label: string; state: StepState; note: string; secondaryNote?: string }[] {
   const s = q.status;
-  const after = ['approved', 'sent', 'accepted'].includes(s);
-  const ap = q.requiredApprover;
-  const approverStep = (role: 'Sales Head' | 'Founder'): { state: StepState; note: string } => {
-    if (ap === 'Rep') return { state: 'skipped', note: 'Skipped — within rep band' };
-    if (ap !== role) return { state: 'skipped', note: role === 'Sales Head' ? 'Skipped — routed straight to Founder' : 'Skipped — Sales Head band covers it' };
-    if (after) return { state: 'done', note: q.approvedAt ? `Approved ${fmtDate(q.approvedAt, 'd MMM, HH:mm')}` : 'Approved' };
-    if (s === 'pending_approval') return { state: 'current', note: 'Awaiting decision' };
-    if (s === 'rejected') return { state: 'stopped', note: 'Rejected' };
-    if (s === 'changes_requested') return { state: 'stopped', note: 'Changes requested' };
-    return { state: 'todo', note: 'Needed once submitted' };
-  };
+  const approval = getApprovalPath(q, (at) => fmtDate(at, 'd MMM yyyy, HH:mm'));
   return [
-    { label: q.source === 'claude' ? 'Created by Claude' : 'Created by rep', state: 'done', note: `${q.repName} · ${fmtDate(q.createdAt)}` },
-    { label: 'Sales Head', ...approverStep('Sales Head') },
-    { label: 'Founder', ...approverStep('Founder') },
+    { label: q.source === 'claude' ? 'Created by Claude' : 'Created by rep', state: 'done', note: `${q.repName} · ${fmtDate(q.createdAt)}`, secondaryNote: approval.originalRouteNote ?? undefined },
+    { label: 'Sales Head', ...approval.salesHead },
+    { label: 'Founder', ...approval.founder },
     { label: 'Sent', state: s === 'sent' || s === 'accepted' ? 'done' : s === 'approved' ? 'current' : 'todo', note: s === 'approved' ? 'Ready to send' : s === 'sent' || s === 'accepted' ? 'Link shared with client' : '' },
     { label: 'Accepted', state: s === 'accepted' ? 'done' : s === 'sent' ? 'current' : 'todo', note: s === 'accepted' ? `By ${q.acceptedBy ?? 'client'}` : s === 'sent' ? 'Waiting on client' : '' },
   ];
@@ -153,6 +144,7 @@ export default function QuoteDetailPage() {
                   <div className="pb-4">
                     <div className={`text-sm font-medium ${st.state === 'skipped' || st.state === 'todo' ? 'text-sub' : 'text-ink'}`}>{st.label}</div>
                     {st.note && <div className={`text-xs ${st.state === 'stopped' ? 'text-bad' : st.state === 'current' ? 'text-warn' : 'text-sub'}`}>{st.note}</div>}
+                    {st.secondaryNote && <div className="mt-1 text-xs text-sub" data-testid="text-original-route">{st.secondaryNote}</div>}
                   </div>
                 </li>
               ))}

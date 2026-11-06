@@ -9,6 +9,7 @@ import { ClaudeConnectCallout } from '@/components/claude-connect-callout';
 import { Skeleton } from '@/components/ui/skeleton';
 import { inr, pct, fmtDate, STATUS_LABEL, isSeed, errMsg } from '@/lib/dd';
 import { canCurrentRoleDecide } from '@/lib/role-access';
+import { getApprovalPath } from '@/lib/approval-history';
 
 export default function QuotesPage({ approvals = false }: { approvals?: boolean }) {
   const [, setLocation] = useLocation();
@@ -72,6 +73,7 @@ export default function QuotesPage({ approvals = false }: { approvals?: boolean 
               <tbody>
                 {rows.map((r) => {
                   const mine = r.status === 'pending_approval' && canCurrentRoleDecide(role, r.requiredApprover);
+                  const approval = getApprovalPath(r, (at) => fmtDate(at, 'd MMM yyyy, HH:mm'));
                   return (
                     <tr key={r.id} onClick={() => setLocation(`/quotes/${r.id}`)} className="border-b border-line last:border-0 hover:bg-surface/60 cursor-pointer" data-testid={`row-quote-${r.id}`}>
                       <td className="px-4 py-3">
@@ -83,7 +85,7 @@ export default function QuotesPage({ approvals = false }: { approvals?: boolean 
                       <td className={`px-3 py-3 text-right tnum ${r.belowFloor ? 'text-bad font-semibold' : ''}`}>{pct(r.effectiveDiscountPercent)}</td>
                       <td className="px-3 py-3"><MarginMeter size="mini" listTotal={r.listTotal} floorTotal={r.floorTotal} effective={r.effectiveDiscountPercent} original={r.originalDiscountPercent} approved={r.approvedDiscountPercent} bands={policy.data?.bands} belowFloor={r.belowFloor} /></td>
                       <td className="px-3 py-3"><StatusBadge status={r.status} /></td>
-                      <td className="px-3 py-3 whitespace-nowrap">{r.requiredApprover}{mine && <span className="ml-1.5 text-xs text-warn font-medium">Your call</span>}</td>
+                      <td className="px-3 py-3 whitespace-nowrap">{approval.approverLabel}{mine && <span className="ml-1.5 text-xs text-warn font-medium">Your call</span>}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-sub">{fmtDate(r.updatedAt)}</td>
                     </tr>
                   );
