@@ -16,6 +16,13 @@ export type Quote = Omit<QuoteInput, "validityDate"> & {
   ruleDescription: string; createdAt: string; updatedAt: string; history: Event[];
   publicToken: string; version: number; acceptedBy: string | null;
 };
+export function marginProtectedForQuote(q: Pick<Quote, "originalDiscountPercent" | "approvedDiscountPercent" | "listTotal">) {
+  if (q.approvedDiscountPercent === null) return 0;
+  return round(Math.max(0, q.originalDiscountPercent - q.approvedDiscountPercent) / 100 * q.listTotal);
+}
+export function quoteWithMarginProtected(q: Quote) {
+  return { ...q, marginProtected: marginProtectedForQuote(q) };
+}
 export const names: Record<Role, string> = { Rep: "Aarav Mehta", "Sales Head": "Meera Iyer", Founder: "Rohan Kapoor" };
 export class AppError extends Error {
   constructor(public status: number, message: string) { super(message); }
@@ -243,7 +250,6 @@ export async function dashboard() {
   const start = new Date(Date.UTC(now.getUTCFullYear(), Math.floor(now.getUTCMonth() / 3) * 3, 1));
   const quotes = all.filter(q => new Date(q.createdAt) >= start);
   const won = quotes.filter(q => ["approved", "sent", "accepted"].includes(q.status));
-  const protectedAmount = (q: Quote) => q.approvedDiscountPercent === null ? 0 : round(Math.max(0, q.originalDiscountPercent - q.approvedDiscountPercent) / 100 * q.listTotal);
   const times = won.filter(q => q.approvedAt).map(q => Math.max(0, (Date.parse(q.approvedAt!) - Date.parse(q.createdAt)) / 3600000)).sort((a, b) => a - b);
   const mid = Math.floor(times.length / 2), median = times.length ? times.length % 2 ? times[mid]! : (times[mid - 1]! + times[mid]!) / 2 : 0;
   const policy = await getPolicy(), repBand = policy.bands.find(b => b.approver === "Rep")?.maxDiscount ?? 0;
@@ -252,13 +258,13 @@ export async function dashboard() {
     discountGiven: round(won.reduce((n, q) => n + Math.max(0, q.listTotal - q.total), 0)),
     averageDiscount: round(quotes.length ? quotes.reduce((n, q) => n + q.effectiveDiscountPercent, 0) / quotes.length : 0),
     abovePolicyRequests: quotes.filter(q => q.originalDiscountPercent > repBand || q.belowFloor).length,
-    marginProtected: round(won.reduce((n, q) => n + protectedAmount(q), 0)),
+    marginProtected: round(won.reduce((n, q) => n + marginProtectedForQuote(q), 0)),
     medianApprovalHours: round(median), totalQuotes: quotes.length,
     pendingCount: quotes.filter(q => q.status === "pending_approval").length,
     pipelineValue: round(quotes.filter(q => !["rejected", "accepted"].includes(q.status)).reduce((n, q) => n + q.total, 0)),
     byRep: [...new Set(quotes.map(q => q.repName))].map(rep => {
       const qs = quotes.filter(q => q.repName === rep), final = qs.filter(q => won.includes(q));
-      return { rep, quoteCount: qs.length, discountPercent: round(qs.reduce((n, q) => n + q.effectiveDiscountPercent, 0) / qs.length), discountGiven: round(final.reduce((n, q) => n + Math.max(0, q.listTotal - q.total), 0)), marginProtected: round(final.reduce((n, q) => n + protectedAmount(q), 0)) };
+      return { rep, quoteCount: qs.length, discountPercent: round(qs.reduce((n, q) => n + q.effectiveDiscountPercent, 0) / qs.length), discountGiven: round(final.reduce((n, q) => n + Math.max(0, q.listTotal - q.total), 0)), marginProtected: round(final.reduce((n, q) => n + marginProtectedForQuote(q), 0)) };
     }),
     recentActivity: quotes.flatMap(q => q.history.map(h => ({ ...h, message: `${q.number} · ${h.message}` }))).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 12),
   };

@@ -163,6 +163,10 @@ export type Quote = QuoteInput & ({
   acceptedBy?: string | null;
 });
 
+export type DealQuote = Quote & {
+  marginProtected: number;
+};
+
 export type ActionInputAction = typeof ActionInputAction[keyof typeof ActionInputAction];
 
 

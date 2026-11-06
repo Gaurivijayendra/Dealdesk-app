@@ -74,6 +74,7 @@ export default function QuoteDetailPage() {
 
   const role = session.data?.role;
   const locked = q.status === 'accepted';
+  const showMarginProtected = ['approved', 'sent', 'accepted'].includes(q.status) && q.approvedDiscountPercent != null;
   const canDecide = q.status === 'pending_approval' && canCurrentRoleDecide(role, q.requiredApprover);
   const canSubmit = q.status === 'draft' || q.status === 'changes_requested';
   const canSend = q.status === 'approved';
@@ -122,7 +123,7 @@ export default function QuoteDetailPage() {
 
         <aside className="space-y-5 lg:sticky lg:top-6">
           <section className="bg-white border border-line rounded-md p-5">
-            <MarginMeter listTotal={q.listTotal} floorTotal={q.floorTotal} effective={q.effectiveDiscountPercent} original={q.originalDiscountPercent} approved={q.approvedDiscountPercent} bands={policy.data?.bands} belowFloor={q.belowFloor} />
+            <MarginMeter listTotal={q.listTotal} floorTotal={q.floorTotal} effective={q.effectiveDiscountPercent} original={q.originalDiscountPercent} approved={q.approvedDiscountPercent} marginProtected={showMarginProtected ? q.marginProtected : undefined} bands={policy.data?.bands} belowFloor={q.belowFloor} />
             {q.belowFloor && <p className="mt-3 text-sm text-bad font-medium" data-testid="text-below-floor">Below floor — this quote gives away margin past policy.</p>}
           </section>
 

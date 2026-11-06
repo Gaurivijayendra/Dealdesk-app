@@ -92,7 +92,7 @@ paths:
           description: Quotes
           content:
             application/json:
-              schema: {type: array, items: {$ref: '#/components/schemas/Quote'}}
+              schema: {type: array, items: {$ref: '#/components/schemas/DealQuote'}}
     post:
       operationId: createQuote
       requestBody:
@@ -105,7 +105,7 @@ paths:
           description: Created
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/Quote'}
+              schema: {$ref: '#/components/schemas/DealQuote'}
   /quotes/{id}:
     parameters:
       - {name: id, in: path, required: true, schema: {type: string}}
@@ -116,7 +116,7 @@ paths:
           description: Quote
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/Quote'}
+              schema: {$ref: '#/components/schemas/DealQuote'}
     put:
       operationId: updateQuote
       requestBody:
@@ -129,7 +129,7 @@ paths:
           description: Saved and policy re-evaluated
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/Quote'}
+              schema: {$ref: '#/components/schemas/DealQuote'}
   /quotes/{id}/actions:
     parameters:
       - {name: id, in: path, required: true, schema: {type: string}}
@@ -145,7 +145,7 @@ paths:
           description: Updated quote
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/Quote'}
+              schema: {$ref: '#/components/schemas/DealQuote'}
   /dashboard:
     get:
       operationId: getDashboard
@@ -298,6 +298,13 @@ components:
             publicToken: {type: string}
             version: {type: integer}
             acceptedBy: {type: [string, 'null']}
+    DealQuote:
+      allOf:
+        - {$ref: '#/components/schemas/Quote'}
+        - type: object
+          required: [marginProtected]
+          properties:
+            marginProtected: {type: number}
     ActionInput:
       type: object
       required: [action]

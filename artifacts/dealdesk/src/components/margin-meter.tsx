@@ -7,12 +7,13 @@ type Props = {
   effective: number;
   original?: number;
   approved?: number | null;
+  marginProtected?: number;
   bands: Band[] | undefined;
   belowFloor?: boolean;
   size?: 'mini' | 'large';
 };
 
-export function MarginMeter({ listTotal, floorTotal, effective, original, approved, bands, belowFloor, size = 'large' }: Props) {
+export function MarginMeter({ listTotal, floorTotal, effective, original, approved, marginProtected, bands, belowFloor, size = 'large' }: Props) {
   const floorD = listTotal > 0 ? Math.max(0, (1 - floorTotal / listTotal) * 100) : 0;
   const bandMax = (r: string) => { const m = (bands ?? []).filter((b) => b.approver === r).map((b) => b.maxDiscount); return m.length ? Math.max(...m) : 0; };
   const repRaw = bandMax('Rep');
@@ -86,6 +87,7 @@ export function MarginMeter({ listTotal, floorTotal, effective, original, approv
         <dt className="text-sub flex items-center gap-2"><span className="w-[3px] h-3 bg-ink inline-block" />Current</dt><dd className="tnum text-right">{pct(effective)}</dd>
         {original !== undefined && (<><dt className="text-sub flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full border-2 border-warn inline-block" />Originally requested</dt><dd className="tnum text-right">{pct(original)}</dd></>)}
         <dt className="text-sub flex items-center gap-2"><span className="w-2 h-2 rotate-45 bg-ok inline-block" />Approved</dt><dd className="tnum text-right">{approved != null ? pct(approved) : 'Not yet'}</dd>
+        {marginProtected !== undefined && (<><dt className="text-ok font-medium">Margin protected on this quote</dt><dd className="tnum text-right text-ok font-semibold">{inr(marginProtected)}</dd></>)}
         <dt className="text-sub">List total</dt><dd className="tnum text-right">{inr(listTotal)}</dd>
         <dt className="text-sub">Floor total</dt><dd className="tnum text-right text-bad">{inr(floorTotal)}</dd>
       </dl>

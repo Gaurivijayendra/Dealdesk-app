@@ -96,49 +96,49 @@ export const ListQuotesQueryParams = zod.object({
   "rep": zod.coerce.string().optional()
 })
 
-export const listQuotesResponseOneClientCompanyMax = 200;
+export const listQuotesResponseOneOneClientCompanyMax = 200;
 
-export const listQuotesResponseOneContactNameMax = 200;
+export const listQuotesResponseOneOneContactNameMax = 200;
 
-export const listQuotesResponseOneRepNameMax = 200;
+export const listQuotesResponseOneOneRepNameMax = 200;
 
 
-export const listQuotesResponseOneLineItemsItemQuantityMax = 100000;
+export const listQuotesResponseOneOneLineItemsItemQuantityMax = 100000;
 
-export const listQuotesResponseOneLineItemsItemUnitPriceMin = 0;
-export const listQuotesResponseOneLineItemsItemUnitPriceMax = 100000000;
+export const listQuotesResponseOneOneLineItemsItemUnitPriceMin = 0;
+export const listQuotesResponseOneOneLineItemsItemUnitPriceMax = 100000000;
 
-export const listQuotesResponseOneLineItemsMax = 100;
+export const listQuotesResponseOneOneLineItemsMax = 100;
 
-export const listQuotesResponseOneDiscountPercentMin = 0;
-export const listQuotesResponseOneDiscountPercentMax = 100;
+export const listQuotesResponseOneOneDiscountPercentMin = 0;
+export const listQuotesResponseOneOneDiscountPercentMax = 100;
 
-export const listQuotesResponseOneDiscountReasonMax = 5000;
+export const listQuotesResponseOneOneDiscountReasonMax = 5000;
 
-export const listQuotesResponseOneCounterOfferMax = 5000;
+export const listQuotesResponseOneOneCounterOfferMax = 5000;
 
-export const listQuotesResponseOneBillingTermsMax = 500;
+export const listQuotesResponseOneOneBillingTermsMax = 500;
 
-export const listQuotesResponseOneNotesMax = 5000;
+export const listQuotesResponseOneOneNotesMax = 5000;
 
 
 
 export const ListQuotesResponseItem = zod.object({
-  "clientCompany": zod.string().min(1).max(listQuotesResponseOneClientCompanyMax),
-  "contactName": zod.string().min(1).max(listQuotesResponseOneContactNameMax),
+  "clientCompany": zod.string().min(1).max(listQuotesResponseOneOneClientCompanyMax),
+  "contactName": zod.string().min(1).max(listQuotesResponseOneOneContactNameMax),
   "contactEmail": zod.string().email(),
-  "repName": zod.string().min(1).max(listQuotesResponseOneRepNameMax),
+  "repName": zod.string().min(1).max(listQuotesResponseOneOneRepNameMax),
   "lineItems": zod.array(zod.object({
   "productName": zod.string().min(1),
-  "quantity": zod.number().int().min(1).max(listQuotesResponseOneLineItemsItemQuantityMax),
-  "unitPrice": zod.number().min(listQuotesResponseOneLineItemsItemUnitPriceMin).max(listQuotesResponseOneLineItemsItemUnitPriceMax)
-})).min(1).max(listQuotesResponseOneLineItemsMax),
-  "discountPercent": zod.number().min(listQuotesResponseOneDiscountPercentMin).max(listQuotesResponseOneDiscountPercentMax),
-  "discountReason": zod.string().max(listQuotesResponseOneDiscountReasonMax),
-  "counterOffer": zod.string().max(listQuotesResponseOneCounterOfferMax).optional(),
-  "billingTerms": zod.string().min(1).max(listQuotesResponseOneBillingTermsMax),
+  "quantity": zod.number().int().min(1).max(listQuotesResponseOneOneLineItemsItemQuantityMax),
+  "unitPrice": zod.number().min(listQuotesResponseOneOneLineItemsItemUnitPriceMin).max(listQuotesResponseOneOneLineItemsItemUnitPriceMax)
+})).min(1).max(listQuotesResponseOneOneLineItemsMax),
+  "discountPercent": zod.number().min(listQuotesResponseOneOneDiscountPercentMin).max(listQuotesResponseOneOneDiscountPercentMax),
+  "discountReason": zod.string().max(listQuotesResponseOneOneDiscountReasonMax),
+  "counterOffer": zod.string().max(listQuotesResponseOneOneCounterOfferMax).optional(),
+  "billingTerms": zod.string().min(1).max(listQuotesResponseOneOneBillingTermsMax),
   "validityDate": zod.coerce.date(),
-  "notes": zod.string().max(listQuotesResponseOneNotesMax),
+  "notes": zod.string().max(listQuotesResponseOneOneNotesMax),
   "saveAsDraft": zod.boolean().optional(),
   "version": zod.number().int()
 }).and(zod.object({
@@ -168,6 +168,8 @@ export const ListQuotesResponseItem = zod.object({
   "publicToken": zod.string(),
   "version": zod.number().int(),
   "acceptedBy": zod.string().nullish()
+})).and(zod.object({
+  "marginProtected": zod.number()
 }))
 export const ListQuotesResponse = zod.array(ListQuotesResponseItem)
 
@@ -219,49 +221,49 @@ export const CreateQuoteBody = zod.object({
   "version": zod.number().int().optional()
 })
 
-export const createQuoteResponseOneClientCompanyMax = 200;
+export const createQuoteResponseOneOneClientCompanyMax = 200;
 
-export const createQuoteResponseOneContactNameMax = 200;
+export const createQuoteResponseOneOneContactNameMax = 200;
 
-export const createQuoteResponseOneRepNameMax = 200;
+export const createQuoteResponseOneOneRepNameMax = 200;
 
 
-export const createQuoteResponseOneLineItemsItemQuantityMax = 100000;
+export const createQuoteResponseOneOneLineItemsItemQuantityMax = 100000;
 
-export const createQuoteResponseOneLineItemsItemUnitPriceMin = 0;
-export const createQuoteResponseOneLineItemsItemUnitPriceMax = 100000000;
+export const createQuoteResponseOneOneLineItemsItemUnitPriceMin = 0;
+export const createQuoteResponseOneOneLineItemsItemUnitPriceMax = 100000000;
 
-export const createQuoteResponseOneLineItemsMax = 100;
+export const createQuoteResponseOneOneLineItemsMax = 100;
 
-export const createQuoteResponseOneDiscountPercentMin = 0;
-export const createQuoteResponseOneDiscountPercentMax = 100;
+export const createQuoteResponseOneOneDiscountPercentMin = 0;
+export const createQuoteResponseOneOneDiscountPercentMax = 100;
 
-export const createQuoteResponseOneDiscountReasonMax = 5000;
+export const createQuoteResponseOneOneDiscountReasonMax = 5000;
 
-export const createQuoteResponseOneCounterOfferMax = 5000;
+export const createQuoteResponseOneOneCounterOfferMax = 5000;
 
-export const createQuoteResponseOneBillingTermsMax = 500;
+export const createQuoteResponseOneOneBillingTermsMax = 500;
 
-export const createQuoteResponseOneNotesMax = 5000;
+export const createQuoteResponseOneOneNotesMax = 5000;
 
 
 
 export const CreateQuoteResponse = zod.object({
-  "clientCompany": zod.string().min(1).max(createQuoteResponseOneClientCompanyMax),
-  "contactName": zod.string().min(1).max(createQuoteResponseOneContactNameMax),
+  "clientCompany": zod.string().min(1).max(createQuoteResponseOneOneClientCompanyMax),
+  "contactName": zod.string().min(1).max(createQuoteResponseOneOneContactNameMax),
   "contactEmail": zod.string().email(),
-  "repName": zod.string().min(1).max(createQuoteResponseOneRepNameMax),
+  "repName": zod.string().min(1).max(createQuoteResponseOneOneRepNameMax),
   "lineItems": zod.array(zod.object({
   "productName": zod.string().min(1),
-  "quantity": zod.number().int().min(1).max(createQuoteResponseOneLineItemsItemQuantityMax),
-  "unitPrice": zod.number().min(createQuoteResponseOneLineItemsItemUnitPriceMin).max(createQuoteResponseOneLineItemsItemUnitPriceMax)
-})).min(1).max(createQuoteResponseOneLineItemsMax),
-  "discountPercent": zod.number().min(createQuoteResponseOneDiscountPercentMin).max(createQuoteResponseOneDiscountPercentMax),
-  "discountReason": zod.string().max(createQuoteResponseOneDiscountReasonMax),
-  "counterOffer": zod.string().max(createQuoteResponseOneCounterOfferMax).optional(),
-  "billingTerms": zod.string().min(1).max(createQuoteResponseOneBillingTermsMax),
+  "quantity": zod.number().int().min(1).max(createQuoteResponseOneOneLineItemsItemQuantityMax),
+  "unitPrice": zod.number().min(createQuoteResponseOneOneLineItemsItemUnitPriceMin).max(createQuoteResponseOneOneLineItemsItemUnitPriceMax)
+})).min(1).max(createQuoteResponseOneOneLineItemsMax),
+  "discountPercent": zod.number().min(createQuoteResponseOneOneDiscountPercentMin).max(createQuoteResponseOneOneDiscountPercentMax),
+  "discountReason": zod.string().max(createQuoteResponseOneOneDiscountReasonMax),
+  "counterOffer": zod.string().max(createQuoteResponseOneOneCounterOfferMax).optional(),
+  "billingTerms": zod.string().min(1).max(createQuoteResponseOneOneBillingTermsMax),
   "validityDate": zod.coerce.date(),
-  "notes": zod.string().max(createQuoteResponseOneNotesMax),
+  "notes": zod.string().max(createQuoteResponseOneOneNotesMax),
   "saveAsDraft": zod.boolean().optional(),
   "version": zod.number().int()
 }).and(zod.object({
@@ -291,6 +293,8 @@ export const CreateQuoteResponse = zod.object({
   "publicToken": zod.string(),
   "version": zod.number().int(),
   "acceptedBy": zod.string().nullish()
+})).and(zod.object({
+  "marginProtected": zod.number()
 }))
 
 
@@ -298,49 +302,49 @@ export const GetQuoteParams = zod.object({
   "id": zod.coerce.string()
 })
 
-export const getQuoteResponseOneClientCompanyMax = 200;
+export const getQuoteResponseOneOneClientCompanyMax = 200;
 
-export const getQuoteResponseOneContactNameMax = 200;
+export const getQuoteResponseOneOneContactNameMax = 200;
 
-export const getQuoteResponseOneRepNameMax = 200;
+export const getQuoteResponseOneOneRepNameMax = 200;
 
 
-export const getQuoteResponseOneLineItemsItemQuantityMax = 100000;
+export const getQuoteResponseOneOneLineItemsItemQuantityMax = 100000;
 
-export const getQuoteResponseOneLineItemsItemUnitPriceMin = 0;
-export const getQuoteResponseOneLineItemsItemUnitPriceMax = 100000000;
+export const getQuoteResponseOneOneLineItemsItemUnitPriceMin = 0;
+export const getQuoteResponseOneOneLineItemsItemUnitPriceMax = 100000000;
 
-export const getQuoteResponseOneLineItemsMax = 100;
+export const getQuoteResponseOneOneLineItemsMax = 100;
 
-export const getQuoteResponseOneDiscountPercentMin = 0;
-export const getQuoteResponseOneDiscountPercentMax = 100;
+export const getQuoteResponseOneOneDiscountPercentMin = 0;
+export const getQuoteResponseOneOneDiscountPercentMax = 100;
 
-export const getQuoteResponseOneDiscountReasonMax = 5000;
+export const getQuoteResponseOneOneDiscountReasonMax = 5000;
 
-export const getQuoteResponseOneCounterOfferMax = 5000;
+export const getQuoteResponseOneOneCounterOfferMax = 5000;
 
-export const getQuoteResponseOneBillingTermsMax = 500;
+export const getQuoteResponseOneOneBillingTermsMax = 500;
 
-export const getQuoteResponseOneNotesMax = 5000;
+export const getQuoteResponseOneOneNotesMax = 5000;
 
 
 
 export const GetQuoteResponse = zod.object({
-  "clientCompany": zod.string().min(1).max(getQuoteResponseOneClientCompanyMax),
-  "contactName": zod.string().min(1).max(getQuoteResponseOneContactNameMax),
+  "clientCompany": zod.string().min(1).max(getQuoteResponseOneOneClientCompanyMax),
+  "contactName": zod.string().min(1).max(getQuoteResponseOneOneContactNameMax),
   "contactEmail": zod.string().email(),
-  "repName": zod.string().min(1).max(getQuoteResponseOneRepNameMax),
+  "repName": zod.string().min(1).max(getQuoteResponseOneOneRepNameMax),
   "lineItems": zod.array(zod.object({
   "productName": zod.string().min(1),
-  "quantity": zod.number().int().min(1).max(getQuoteResponseOneLineItemsItemQuantityMax),
-  "unitPrice": zod.number().min(getQuoteResponseOneLineItemsItemUnitPriceMin).max(getQuoteResponseOneLineItemsItemUnitPriceMax)
-})).min(1).max(getQuoteResponseOneLineItemsMax),
-  "discountPercent": zod.number().min(getQuoteResponseOneDiscountPercentMin).max(getQuoteResponseOneDiscountPercentMax),
-  "discountReason": zod.string().max(getQuoteResponseOneDiscountReasonMax),
-  "counterOffer": zod.string().max(getQuoteResponseOneCounterOfferMax).optional(),
-  "billingTerms": zod.string().min(1).max(getQuoteResponseOneBillingTermsMax),
+  "quantity": zod.number().int().min(1).max(getQuoteResponseOneOneLineItemsItemQuantityMax),
+  "unitPrice": zod.number().min(getQuoteResponseOneOneLineItemsItemUnitPriceMin).max(getQuoteResponseOneOneLineItemsItemUnitPriceMax)
+})).min(1).max(getQuoteResponseOneOneLineItemsMax),
+  "discountPercent": zod.number().min(getQuoteResponseOneOneDiscountPercentMin).max(getQuoteResponseOneOneDiscountPercentMax),
+  "discountReason": zod.string().max(getQuoteResponseOneOneDiscountReasonMax),
+  "counterOffer": zod.string().max(getQuoteResponseOneOneCounterOfferMax).optional(),
+  "billingTerms": zod.string().min(1).max(getQuoteResponseOneOneBillingTermsMax),
   "validityDate": zod.coerce.date(),
-  "notes": zod.string().max(getQuoteResponseOneNotesMax),
+  "notes": zod.string().max(getQuoteResponseOneOneNotesMax),
   "saveAsDraft": zod.boolean().optional(),
   "version": zod.number().int()
 }).and(zod.object({
@@ -370,6 +374,8 @@ export const GetQuoteResponse = zod.object({
   "publicToken": zod.string(),
   "version": zod.number().int(),
   "acceptedBy": zod.string().nullish()
+})).and(zod.object({
+  "marginProtected": zod.number()
 }))
 
 
@@ -424,49 +430,49 @@ export const UpdateQuoteBody = zod.object({
   "version": zod.number().int().optional()
 })
 
-export const updateQuoteResponseOneClientCompanyMax = 200;
+export const updateQuoteResponseOneOneClientCompanyMax = 200;
 
-export const updateQuoteResponseOneContactNameMax = 200;
+export const updateQuoteResponseOneOneContactNameMax = 200;
 
-export const updateQuoteResponseOneRepNameMax = 200;
+export const updateQuoteResponseOneOneRepNameMax = 200;
 
 
-export const updateQuoteResponseOneLineItemsItemQuantityMax = 100000;
+export const updateQuoteResponseOneOneLineItemsItemQuantityMax = 100000;
 
-export const updateQuoteResponseOneLineItemsItemUnitPriceMin = 0;
-export const updateQuoteResponseOneLineItemsItemUnitPriceMax = 100000000;
+export const updateQuoteResponseOneOneLineItemsItemUnitPriceMin = 0;
+export const updateQuoteResponseOneOneLineItemsItemUnitPriceMax = 100000000;
 
-export const updateQuoteResponseOneLineItemsMax = 100;
+export const updateQuoteResponseOneOneLineItemsMax = 100;
 
-export const updateQuoteResponseOneDiscountPercentMin = 0;
-export const updateQuoteResponseOneDiscountPercentMax = 100;
+export const updateQuoteResponseOneOneDiscountPercentMin = 0;
+export const updateQuoteResponseOneOneDiscountPercentMax = 100;
 
-export const updateQuoteResponseOneDiscountReasonMax = 5000;
+export const updateQuoteResponseOneOneDiscountReasonMax = 5000;
 
-export const updateQuoteResponseOneCounterOfferMax = 5000;
+export const updateQuoteResponseOneOneCounterOfferMax = 5000;
 
-export const updateQuoteResponseOneBillingTermsMax = 500;
+export const updateQuoteResponseOneOneBillingTermsMax = 500;
 
-export const updateQuoteResponseOneNotesMax = 5000;
+export const updateQuoteResponseOneOneNotesMax = 5000;
 
 
 
 export const UpdateQuoteResponse = zod.object({
-  "clientCompany": zod.string().min(1).max(updateQuoteResponseOneClientCompanyMax),
-  "contactName": zod.string().min(1).max(updateQuoteResponseOneContactNameMax),
+  "clientCompany": zod.string().min(1).max(updateQuoteResponseOneOneClientCompanyMax),
+  "contactName": zod.string().min(1).max(updateQuoteResponseOneOneContactNameMax),
   "contactEmail": zod.string().email(),
-  "repName": zod.string().min(1).max(updateQuoteResponseOneRepNameMax),
+  "repName": zod.string().min(1).max(updateQuoteResponseOneOneRepNameMax),
   "lineItems": zod.array(zod.object({
   "productName": zod.string().min(1),
-  "quantity": zod.number().int().min(1).max(updateQuoteResponseOneLineItemsItemQuantityMax),
-  "unitPrice": zod.number().min(updateQuoteResponseOneLineItemsItemUnitPriceMin).max(updateQuoteResponseOneLineItemsItemUnitPriceMax)
-})).min(1).max(updateQuoteResponseOneLineItemsMax),
-  "discountPercent": zod.number().min(updateQuoteResponseOneDiscountPercentMin).max(updateQuoteResponseOneDiscountPercentMax),
-  "discountReason": zod.string().max(updateQuoteResponseOneDiscountReasonMax),
-  "counterOffer": zod.string().max(updateQuoteResponseOneCounterOfferMax).optional(),
-  "billingTerms": zod.string().min(1).max(updateQuoteResponseOneBillingTermsMax),
+  "quantity": zod.number().int().min(1).max(updateQuoteResponseOneOneLineItemsItemQuantityMax),
+  "unitPrice": zod.number().min(updateQuoteResponseOneOneLineItemsItemUnitPriceMin).max(updateQuoteResponseOneOneLineItemsItemUnitPriceMax)
+})).min(1).max(updateQuoteResponseOneOneLineItemsMax),
+  "discountPercent": zod.number().min(updateQuoteResponseOneOneDiscountPercentMin).max(updateQuoteResponseOneOneDiscountPercentMax),
+  "discountReason": zod.string().max(updateQuoteResponseOneOneDiscountReasonMax),
+  "counterOffer": zod.string().max(updateQuoteResponseOneOneCounterOfferMax).optional(),
+  "billingTerms": zod.string().min(1).max(updateQuoteResponseOneOneBillingTermsMax),
   "validityDate": zod.coerce.date(),
-  "notes": zod.string().max(updateQuoteResponseOneNotesMax),
+  "notes": zod.string().max(updateQuoteResponseOneOneNotesMax),
   "saveAsDraft": zod.boolean().optional(),
   "version": zod.number().int()
 }).and(zod.object({
@@ -496,6 +502,8 @@ export const UpdateQuoteResponse = zod.object({
   "publicToken": zod.string(),
   "version": zod.number().int(),
   "acceptedBy": zod.string().nullish()
+})).and(zod.object({
+  "marginProtected": zod.number()
 }))
 
 
@@ -513,49 +521,49 @@ export const QuoteActionBody = zod.object({
   "version": zod.number().int().optional()
 })
 
-export const quoteActionResponseOneClientCompanyMax = 200;
+export const quoteActionResponseOneOneClientCompanyMax = 200;
 
-export const quoteActionResponseOneContactNameMax = 200;
+export const quoteActionResponseOneOneContactNameMax = 200;
 
-export const quoteActionResponseOneRepNameMax = 200;
+export const quoteActionResponseOneOneRepNameMax = 200;
 
 
-export const quoteActionResponseOneLineItemsItemQuantityMax = 100000;
+export const quoteActionResponseOneOneLineItemsItemQuantityMax = 100000;
 
-export const quoteActionResponseOneLineItemsItemUnitPriceMin = 0;
-export const quoteActionResponseOneLineItemsItemUnitPriceMax = 100000000;
+export const quoteActionResponseOneOneLineItemsItemUnitPriceMin = 0;
+export const quoteActionResponseOneOneLineItemsItemUnitPriceMax = 100000000;
 
-export const quoteActionResponseOneLineItemsMax = 100;
+export const quoteActionResponseOneOneLineItemsMax = 100;
 
-export const quoteActionResponseOneDiscountPercentMin = 0;
-export const quoteActionResponseOneDiscountPercentMax = 100;
+export const quoteActionResponseOneOneDiscountPercentMin = 0;
+export const quoteActionResponseOneOneDiscountPercentMax = 100;
 
-export const quoteActionResponseOneDiscountReasonMax = 5000;
+export const quoteActionResponseOneOneDiscountReasonMax = 5000;
 
-export const quoteActionResponseOneCounterOfferMax = 5000;
+export const quoteActionResponseOneOneCounterOfferMax = 5000;
 
-export const quoteActionResponseOneBillingTermsMax = 500;
+export const quoteActionResponseOneOneBillingTermsMax = 500;
 
-export const quoteActionResponseOneNotesMax = 5000;
+export const quoteActionResponseOneOneNotesMax = 5000;
 
 
 
 export const QuoteActionResponse = zod.object({
-  "clientCompany": zod.string().min(1).max(quoteActionResponseOneClientCompanyMax),
-  "contactName": zod.string().min(1).max(quoteActionResponseOneContactNameMax),
+  "clientCompany": zod.string().min(1).max(quoteActionResponseOneOneClientCompanyMax),
+  "contactName": zod.string().min(1).max(quoteActionResponseOneOneContactNameMax),
   "contactEmail": zod.string().email(),
-  "repName": zod.string().min(1).max(quoteActionResponseOneRepNameMax),
+  "repName": zod.string().min(1).max(quoteActionResponseOneOneRepNameMax),
   "lineItems": zod.array(zod.object({
   "productName": zod.string().min(1),
-  "quantity": zod.number().int().min(1).max(quoteActionResponseOneLineItemsItemQuantityMax),
-  "unitPrice": zod.number().min(quoteActionResponseOneLineItemsItemUnitPriceMin).max(quoteActionResponseOneLineItemsItemUnitPriceMax)
-})).min(1).max(quoteActionResponseOneLineItemsMax),
-  "discountPercent": zod.number().min(quoteActionResponseOneDiscountPercentMin).max(quoteActionResponseOneDiscountPercentMax),
-  "discountReason": zod.string().max(quoteActionResponseOneDiscountReasonMax),
-  "counterOffer": zod.string().max(quoteActionResponseOneCounterOfferMax).optional(),
-  "billingTerms": zod.string().min(1).max(quoteActionResponseOneBillingTermsMax),
+  "quantity": zod.number().int().min(1).max(quoteActionResponseOneOneLineItemsItemQuantityMax),
+  "unitPrice": zod.number().min(quoteActionResponseOneOneLineItemsItemUnitPriceMin).max(quoteActionResponseOneOneLineItemsItemUnitPriceMax)
+})).min(1).max(quoteActionResponseOneOneLineItemsMax),
+  "discountPercent": zod.number().min(quoteActionResponseOneOneDiscountPercentMin).max(quoteActionResponseOneOneDiscountPercentMax),
+  "discountReason": zod.string().max(quoteActionResponseOneOneDiscountReasonMax),
+  "counterOffer": zod.string().max(quoteActionResponseOneOneCounterOfferMax).optional(),
+  "billingTerms": zod.string().min(1).max(quoteActionResponseOneOneBillingTermsMax),
   "validityDate": zod.coerce.date(),
-  "notes": zod.string().max(quoteActionResponseOneNotesMax),
+  "notes": zod.string().max(quoteActionResponseOneOneNotesMax),
   "saveAsDraft": zod.boolean().optional(),
   "version": zod.number().int()
 }).and(zod.object({
@@ -585,6 +593,8 @@ export const QuoteActionResponse = zod.object({
   "publicToken": zod.string(),
   "version": zod.number().int(),
   "acceptedBy": zod.string().nullish()
+})).and(zod.object({
+  "marginProtected": zod.number()
 }))
 
 

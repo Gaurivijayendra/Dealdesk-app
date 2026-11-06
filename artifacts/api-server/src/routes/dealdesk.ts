@@ -2,12 +2,19 @@ import { Router, type IRouter } from "express";
 import {
   LoginBody, SwitchRoleBody, CreateQuoteBody, UpdateQuoteBody, QuoteActionBody,
   UpdatePolicyBody, AcceptPublicQuoteBody, ListQuotesQueryParams,
-  GetQuoteParams, GetPublicQuoteParams,
+  GetQuoteParams, GetPublicQuoteParams, ListQuotesResponse, CreateQuoteResponse,
+  GetQuoteResponse, UpdateQuoteResponse, QuoteActionResponse,
 } from "@workspace/api-zod";
-import { AppError, getPolicy, savePolicy, listQuotes, getQuote, createQuote, updateQuote, actionQuote, publicQuote, acceptQuote, dashboard } from "../lib/dealdesk";
+import type { ZodTypeAny } from "zod";
+import { AppError, getPolicy, savePolicy, listQuotes, getQuote, createQuote, updateQuote, actionQuote, publicQuote, acceptQuote, dashboard, quoteWithMarginProtected, type Quote } from "../lib/dealdesk";
 import { sessionMiddleware, requireLogin, sameOrigin, loginSession, signedOut, changeRole, endSession } from "../lib/session";
 
 const router: IRouter = Router();
+const quoteResponse = (schema: ZodTypeAny, q: Quote) => {
+  const response = quoteWithMarginProtected(q);
+  schema.parse(response);
+  return response;
+};
 router.use(sessionMiddleware);
 router.get("/session", (req, res) => { res.json(req.demoSession ?? signedOut); });
 router.post("/session", sameOrigin, async (req, res) => {
@@ -32,14 +39,16 @@ router.put("/policy", async (req, res) => {
 });
 router.get("/quotes", async (req, res) => {
   const { status, rep } = ListQuotesQueryParams.parse(req.query);
-  res.json(await listQuotes(status, rep));
+  const response = (await listQuotes(status, rep)).map(quoteWithMarginProtected);
+  ListQuotesResponse.parse(response);
+  res.json(response);
 });
-router.post("/quotes", async (req, res) => { res.status(201).json(await createQuote(CreateQuoteBody.parse(req.body), "manual")); });
-router.get("/quotes/:id", async (req, res) => { res.json(await getQuote(GetQuoteParams.parse(req.params).id)); });
-router.put("/quotes/:id", async (req, res) => { res.json(await updateQuote(GetQuoteParams.parse(req.params).id, UpdateQuoteBody.parse(req.body), req.demoSession!.name)); });
+router.post("/quotes", async (req, res) => { res.status(201).json(quoteResponse(CreateQuoteResponse, await createQuote(CreateQuoteBody.parse(req.body), "manual"))); });
+router.get("/quotes/:id", async (req, res) => { res.json(quoteResponse(GetQuoteResponse, await getQuote(GetQuoteParams.parse(req.params).id))); });
+router.put("/quotes/:id", async (req, res) => { res.json(quoteResponse(UpdateQuoteResponse, await updateQuote(GetQuoteParams.parse(req.params).id, UpdateQuoteBody.parse(req.body), req.demoSession!.name))); });
 router.post("/quotes/:id/actions", async (req, res) => {
   const input = QuoteActionBody.parse(req.body);
-  res.json(await actionQuote(GetQuoteParams.parse(req.params).id, input.action, req.demoSession!.role, input.comment, input.version));
+  res.json(quoteResponse(QuoteActionResponse, await actionQuote(GetQuoteParams.parse(req.params).id, input.action, req.demoSession!.role, input.comment, input.version)));
 });
 router.get("/dashboard", async (_req, res) => { res.json(await dashboard()); });
 router.get("/connect", (_req, res) => {

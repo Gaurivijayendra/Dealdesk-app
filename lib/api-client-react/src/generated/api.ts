@@ -24,12 +24,12 @@ import type {
   ActionInput,
   ConnectionInfo,
   Dashboard,
+  DealQuote,
   HealthStatus,
   ListQuotesParams,
   LoginInput,
   Policy,
   PublicQuote,
-  Quote,
   QuoteInput,
   RoleInput,
   Session
@@ -604,9 +604,9 @@ export const getListQuotesUrl = (params?: ListQuotesParams,) => {
   return stringifiedParams.length > 0 ? `/api/quotes?${stringifiedParams}` : `/api/quotes`
 }
 
-export const listQuotes = async (params?: ListQuotesParams, options?: Parameters<typeof customFetch>[1]): Promise<Quote[]> => {
+export const listQuotes = async (params?: ListQuotesParams, options?: Parameters<typeof customFetch>[1]): Promise<DealQuote[]> => {
 
-  return customFetch<Quote[]>(getListQuotesUrl(params),
+  return customFetch<DealQuote[]>(getListQuotesUrl(params),
   {
     ...options,
     method: 'GET'
@@ -675,7 +675,7 @@ export const getCreateQuoteUrl = () => {
   return `/api/quotes`
 }
 
-export const createQuote = async (quoteInput: QuoteInput, options?: Parameters<typeof customFetch>[1]): Promise<Quote> => {
+export const createQuote = async (quoteInput: QuoteInput, options?: Parameters<typeof customFetch>[1]): Promise<DealQuote> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -691,7 +691,7 @@ export const createQuote = async (quoteInput: QuoteInput, options?: Parameters<t
     }
     return headers;
   };
-return customFetch<Quote>(getCreateQuoteUrl(),
+return customFetch<DealQuote>(getCreateQuoteUrl(),
   {
     ...options,
     method: 'POST',
@@ -757,9 +757,9 @@ export const getGetQuoteUrl = (id: string,) => {
   return `/api/quotes/${id}`
 }
 
-export const getQuote = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<Quote> => {
+export const getQuote = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<DealQuote> => {
 
-  return customFetch<Quote>(getGetQuoteUrl(id),
+  return customFetch<DealQuote>(getGetQuoteUrl(id),
   {
     ...options,
     method: 'GET'
@@ -829,7 +829,7 @@ export const getUpdateQuoteUrl = (id: string,) => {
 }
 
 export const updateQuote = async (id: string,
-    quoteInput: QuoteInput, options?: Parameters<typeof customFetch>[1]): Promise<Quote> => {
+    quoteInput: QuoteInput, options?: Parameters<typeof customFetch>[1]): Promise<DealQuote> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -845,7 +845,7 @@ export const updateQuote = async (id: string,
     }
     return headers;
   };
-return customFetch<Quote>(getUpdateQuoteUrl(id),
+return customFetch<DealQuote>(getUpdateQuoteUrl(id),
   {
     ...options,
     method: 'PUT',
@@ -912,7 +912,7 @@ export const getQuoteActionUrl = (id: string,) => {
 }
 
 export const quoteAction = async (id: string,
-    actionInput: ActionInput, options?: Parameters<typeof customFetch>[1]): Promise<Quote> => {
+    actionInput: ActionInput, options?: Parameters<typeof customFetch>[1]): Promise<DealQuote> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -928,7 +928,7 @@ export const quoteAction = async (id: string,
     }
     return headers;
   };
-return customFetch<Quote>(getQuoteActionUrl(id),
+return customFetch<DealQuote>(getQuoteActionUrl(id),
   {
     ...options,
     method: 'POST',

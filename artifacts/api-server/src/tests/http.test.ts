@@ -17,6 +17,7 @@ type PublicResult = {
   quote: Quote;
   payment?: { reference: string; amount: number; label: string; accountName: string };
 };
+type QuoteWithMargin = Quote & { marginProtected: number };
 const roles: Role[] = ["Rep", "Sales Head", "Founder"];
 const decisions = ["approve", "reject", "request_changes"] as const;
 
@@ -272,6 +273,55 @@ describe("reapproval and stale-version write protection", () => {
   });
 });
 
+describe("per-quote margin protection", () => {
+  it("uses the same per-quote amounts in detail responses and the dashboard without exposing them publicly", async () => {
+    const cookie = await login("Founder");
+    const created = await request<QuoteWithMargin>("POST", "/quotes", quoteInput({ discountPercent: 25 }), cookie);
+    expect(created.status).toBe(201);
+    expect(created.data.marginProtected).toBe(0);
+
+    const edited = await request<QuoteWithMargin>("PUT", `/quotes/${created.data.id}`, {
+      ...created.data,
+      discountPercent: 18,
+    }, cookie);
+    expect(edited.status).toBe(200);
+    expect(edited.data.marginProtected).toBe(0);
+
+    const approved = await request<QuoteWithMargin>("POST", `/quotes/${created.data.id}/actions`, {
+      action: "approve",
+      version: edited.data.version,
+    }, cookie);
+    expect(approved.status).toBe(200);
+    expect(approved.data.marginProtected).toBeGreaterThan(0);
+    expect(approved.data.marginProtected).toBe(
+      Math.round((approved.data.originalDiscountPercent - approved.data.approvedDiscountPercent!) / 100 * approved.data.listTotal * 100) / 100,
+    );
+
+    const sent = await request<QuoteWithMargin>("POST", `/quotes/${created.data.id}/actions`, {
+      action: "send",
+      version: approved.data.version,
+    }, cookie);
+    expect(sent.status).toBe(200);
+    const accepted = await request<PublicResult>("POST", `/public/quotes/${sent.data.publicToken}/accept`, { name: "Demo Buyer" });
+    expect(accepted.status).toBe(200);
+    expect(accepted.data.quote).not.toHaveProperty("marginProtected");
+
+    const acceptedDetail = await request<QuoteWithMargin>("GET", `/quotes/${created.data.id}`, undefined, cookie);
+    expect(acceptedDetail.data.marginProtected).toBe(approved.data.marginProtected);
+
+    const noProtection = await request<QuoteWithMargin>("POST", "/quotes", quoteInput({ discountPercent: 8 }), cookie);
+    expect(noProtection.data.status).toBe("approved");
+    expect(noProtection.data.marginProtected).toBe(0);
+
+    const listed = await request<QuoteWithMargin[]>("GET", "/quotes", undefined, cookie);
+    const listTotal = listed.data
+      .filter(q => ["approved", "sent", "accepted"].includes(q.status))
+      .reduce((sum, q) => sum + q.marginProtected, 0);
+    const metrics = await request<{ marginProtected: number }>("GET", "/dashboard", undefined, cookie);
+    expect(listTotal).toBe(metrics.data.marginProtected);
+  });
+});
+
 describe("client links, immutable acceptance and simulated payments", () => {
   it("revokes both read and accept access to the old sent link after editing, until a new send", async () => {
     const cookie = await login();
@@ -334,7 +384,10 @@ describe("client links, immutable acceptance and simulated payments", () => {
       expect(retry.data).toEqual(first.data);
     }
     expect((await request<PublicResult>("GET", path)).data).toEqual(first.data);
-    expect(await read(cookie, sent.id)).toEqual(first.data.quote);
+    const acceptedRead = await read(cookie, sent.id) as QuoteWithMargin;
+    const { marginProtected: acceptedMarginProtected, ...acceptedQuote } = acceptedRead;
+    expect(acceptedMarginProtected).toBe(0);
+    expect(acceptedQuote).toEqual(first.data.quote);
   });
 
   it("serializes simultaneous first acceptances into one acceptance event and payment reference", async () => {
@@ -361,7 +414,10 @@ describe("client links, immutable acceptance and simulated payments", () => {
     const policy = structuredClone(initialPolicy);
     policy.bands[0]!.maxDiscount = 5;
     expect((await request("PUT", "/policy", policy, cookie)).status).toBe(200);
-    expect(await read(cookie, q.id)).toEqual(q);
+    const lockedRead = await read(cookie, q.id) as QuoteWithMargin;
+    const { marginProtected: lockedMarginProtected, ...lockedQuote } = lockedRead;
+    expect(lockedMarginProtected).toBe(0);
+    expect(lockedQuote).toEqual(q);
     expect((await request<PublicResult>("GET", `/public/quotes/${q.publicToken}`)).data).toEqual(accepted.data);
   });
 

@@ -13,6 +13,7 @@ export * from './auditEvent';
 export * from './band';
 export * from './connectionInfo';
 export * from './dashboard';
+export * from './dealQuote';
 export * from './healthStatus';
 export * from './lineItem';
 export * from './listQuotesParams';
